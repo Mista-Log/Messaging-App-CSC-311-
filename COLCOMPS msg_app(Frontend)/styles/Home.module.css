@@ -1,0 +1,14 @@
+.container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.main{
+  width: 70vw;
+  height: 100vh;
+  background-color: rgb(248, 249, 250);
+  border-bottom: 6px solid #44ce79;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
