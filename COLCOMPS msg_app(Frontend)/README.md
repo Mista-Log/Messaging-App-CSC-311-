@@ -6,7 +6,7 @@
 
 <br/>
 
-# Whatsapp Clone
+# Messaging App
 
 <br/>
  
