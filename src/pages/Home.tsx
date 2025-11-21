@@ -9,29 +9,29 @@ import RightSide from "../components/RightSide";
 
 export default function Home() {
   const [selectedChatRoom, setSelectedChatRoom] = useState<string>("");
-  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+    return () =>
+      window.removeEventListener("resize", () =>
+        setWindowWidth(window.innerWidth)
+      );
+  }, []);
   const [user, setUser] = useState<User>();
   const [openChat, setOpenChat] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
-    setWindowWidth(window.innerWidth);
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (currentUser) => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        const res = await getDoc(doc(db, "users", currentUser.uid));
-        setUser({
-          uid: currentUser.uid,
-          email: currentUser.email!,
-          birthday: res.data()?.birthday,
-          fName: res.data()?.fName,
-          lName: res.data()?.lName,
-          picture: res.data()?.picture,
+        getDoc(doc(db, "users", currentUser.uid)).then((res) => {
+          setUser({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            birthday: res.data()?.birthday,
+            fName: res.data()?.fName,
+            lName: res.data()?.lName,
+            picture: res.data()?.picture,
+          });
         });
       } else {
         navigate("/login", { replace: true });
@@ -39,9 +39,6 @@ export default function Home() {
     });
     return unsub;
   }, [navigate]);
-
-  if (!user) return <div>Loading...</div>;
-
   return (
     <div className="grid overflow-auto grid-cols-7 font-jakarta h-screen">
       {(openChat || windowWidth > 768) && (
@@ -49,19 +46,19 @@ export default function Home() {
           setOpen={setOpenChat}
           selectedChatRoom={selectedChatRoom}
           setSelectedChatRoom={setSelectedChatRoom}
-          picture={user.picture}
-          userId={user.uid}
-          displayName={`${user.fName || "____"} ${user.lName || "____"}`}
+          picture={user?.picture}
+          userId={user?.uid}
+          displayName={(user?.fName || "____") + " " + (user?.lName || "____")}
         />
       )}
       {(!openChat || windowWidth > 768) && (
         <RightSide
           setOpen={setOpenChat}
-          userId={user.uid}
+          userId={user?.uid}
           chatRoomId={selectedChatRoom}
-          picture={user.picture}
-          fName={user.fName || "____"}
-          lName={user.lName || "____"}
+          picture={user?.picture}
+          fName={user?.fName || "____"}
+          lName={user?.lName || "____"}
         />
       )}
     </div>
