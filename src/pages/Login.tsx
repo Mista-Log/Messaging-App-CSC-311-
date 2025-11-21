@@ -1,5 +1,5 @@
 import whatsappscreen from "../assets/whatsappscreen.png";
-import whatsapplogo from "../assets/whatsapplogo2.png";
+import funaablogo from "../assets/funaablogo.png";
 import google from "../assets/google.png";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -105,8 +105,8 @@ export default function Login() {
       >
         <div>
           <img
-            src={whatsapplogo}
-            alt="whatsapplogo"
+            src={funaablogo}
+            alt="funaablogo"
             className="w-52 pointer-events-none"
           />
         </div>

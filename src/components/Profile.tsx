@@ -1,4 +1,4 @@
-import whatsappLogo from "../assets/whatsapp logo.png";
+import funaablogo from "../assets/funaab.png";
 
 type Props = {
   setOpen: (b: boolean) => void;
@@ -27,12 +27,12 @@ export default function Profile({ setOpen }: Props) {
         </div>
         <div className="flex items-center">
           <img
-            src={whatsappLogo}
+            src={funaablogo}
             className="h-10 w-10 rounded-full pointer-events-none object-contain"
             alt="whatsapp"
           />
         </div>
-        <p className="text-white font-semibold">WhatsApp</p>
+        <p className="text-white font-semibold">Message</p>
       </div>
       <div></div>
     </div>

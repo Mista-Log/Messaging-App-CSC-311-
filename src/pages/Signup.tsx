@@ -1,6 +1,6 @@
 import google from "../assets/google.png";
 import whatsappscreen from "../assets/whatsappscreen.png";
-import whatsapplogo from "../assets/whatsapplogo2.png";
+import funaablogo from "../assets/funaablogo.png";
 import { useEffect, useRef, useState } from "react";
 import { Calendar } from "@hassanmojab/react-modern-calendar-datepicker";
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
@@ -142,8 +142,8 @@ export default function Signup() {
       <div className="col-span-5 lg:col-span-3 px-20 py-10">
         <div>
           <img
-            src={whatsapplogo}
-            alt="whatsapplogo"
+            src={funaablogo}
+            alt="funaablogo"
             className="w-28 pointer-events-none"
           />
         </div>

@@ -36,7 +36,7 @@ export default function ChatHeader({
         <img
           src={picture}
           className="h-10 w-10 rounded-full pointer-events-none object-cover"
-          alt="whatsapp"
+          alt="message"
         />
       </div>
       <div>
