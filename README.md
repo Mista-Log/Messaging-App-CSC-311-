@@ -1,7 +1,7 @@
-﻿# Whatsapp-v2-clone
+﻿# FUNAAB Messenger
 
 ### Live Preview :  
-**[whatsapp v1 clone](https://whatsapp-v2-clone.vercel.app/)**
+**[FUNAAB Messenger](https://whatsapp-v2-clone.vercel.app/)**
 <br>
 <br>
 
