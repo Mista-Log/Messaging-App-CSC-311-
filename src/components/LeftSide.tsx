@@ -2,7 +2,7 @@ import { signOut } from "firebase/auth";
 import { useEffect, useState, memo, useRef } from "react";
 import emptyProfile from "../assets/empty-profile.png";
 import { auth, db } from "../core/firebaseConfig";
-import {
+import { 
   collection,
   DocumentData,
   onSnapshot,
@@ -20,6 +20,7 @@ import "reactjs-popup/dist/index.css";
 import AddUser from "./AddUser";
 import { motion } from "framer-motion";
 import { PopupActions } from "reactjs-popup/dist/types";
+
 function timeConverter(UNIX_timestamp: Timestamp): string {
   const a = new Date(UNIX_timestamp.seconds * 1000);
   return (
@@ -34,6 +35,7 @@ function timeConverter(UNIX_timestamp: Timestamp): string {
     })
   );
 }
+
 type Props = {
   picture?: string;
   userId?: string;
@@ -54,26 +56,25 @@ export default memo(function LeftSide({
   const [searchValue, setSearchValue] = useState("");
   const [chatRooms, setChatRooms] = useState<chatRoom[]>();
   const refPopup = useRef<PopupActions>(null);
+
   useEffect(() => {
-    if (userId) {
-      const q = query(
-        collection(db, "chats"),
-        where("userIds", "array-contains", userId),
-        orderBy("updatedAt")
-      );
-      const unsubscribe = onSnapshot(
-        q,
-        (querySnapshot: QuerySnapshot<DocumentData>) => {
-          const chatRooms: chatRoom[] = [];
-          querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
-            chatRooms.push(doc.data() as chatRoom);
-          });
-          setChatRooms(chatRooms.reverse());
-        }
-      );
-      return unsubscribe;
-    }
+    if (!userId) return;
+
+    const q = query(
+      collection(db, "chats"),
+      where("userIds", "array-contains", userId),
+      orderBy("updatedAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const rooms: chatRoom[] = snapshot.docs.map(doc => doc.data() as chatRoom);
+      setChatRooms(rooms);
+    });
+
+    return unsubscribe;
   }, [userId]);
+
+
   return (
     <motion.div
       initial={{ x: "-100vh" }}

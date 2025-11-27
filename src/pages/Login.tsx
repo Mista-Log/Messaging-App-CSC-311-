@@ -29,13 +29,27 @@ export default function Login() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
   };
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .catch((e) => setError(e.code))
-      .finally(() => setLoading(false));
+
+    try {
+      
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      
+      // On success, clear the form and redirect
+      alert("Success! You have been Logged in.");
+      // Example redirection: navigate('/home'); 
+              
+    } catch (err: any) {
+        // Display the error message from the handler (e.g., "Passwords do not match.")
+        setError(err.message || "An unknown error occurred.");
+    } finally {
+        setLoading(false);
+    }
+    
+
   };
   const signInWithGoogleHandler = () => {
     const provider = new GoogleAuthProvider();

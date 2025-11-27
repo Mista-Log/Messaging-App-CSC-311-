@@ -19,21 +19,33 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { BirthdayDate, SignUpType } from "../core/types";
+import { handleSignUp } from '../core/handleSignup';
+
+const initialFormState: SignUpType = {
+  fName: '',
+  lName: '',
+  email: '',
+  // Example BirthdayDate structure
+  birthday: { day: 15, month: 8, year: 1995 } as BirthdayDate, 
+  password: '',
+  confirmPassword: '',
+};
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState<SignUpType>(initialFormState);
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<SignUpType>({
-    fName: "",
-    lName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    birthday: { day: 5, month: 6, year: 2002 },
-  });
+  // const [data, setData] = useState<SignUpType>({
+  //   fName: "",
+  //   lName: "",
+  //   email: "",
+  //   password: "",
+  //   confirmPassword: "",
+  //   birthday: { day: 5, month: 6, year: 2002 },
+  // });
   useEffect(() => {
     document.addEventListener("click", (e) => {
       if (!calendarRef.current?.contains(e.target as Node)) {
@@ -47,75 +59,97 @@ export default function Signup() {
     });
   }, []);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
+    setFormData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
   };
   const dateChangeHandler = (date: BirthdayDate) => {
-    setData({ ...data, birthday: date });
+    setFormData({ ...formData, birthday: date });
     setOpenCalendar(false);
   };
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    const { fName, lName, email, password, confirmPassword, birthday } = data;
-    if (fName.trim() === "") {
-      setError("First name can not be empty");
-      setLoading(false);
-    } else if (lName.trim() === "") {
-      setLoading(false);
-      setError("Last name can not be empty");
-    } else if (password !== confirmPassword) {
-      setError("Password missmatch");
-      setLoading(false);
-    } else {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((user) => {
-          const userData = {
-            fName,
-            lName,
-            birthday,
-            email,
-            uid: user.user.uid,
-            picture: "",
-            search: [
-              lName.toLowerCase(),
-              fName.toLowerCase(),
-              email.toLowerCase(),
-              fName.toLowerCase() + " " + lName.toLowerCase(),
-            ],
-          };
-          setDoc(doc(db, "users", user.user.uid), userData);
-          addDoc(collection(db, "chats"), {
-            createdAt: serverTimestamp(),
-            lastMessage: "",
-            updatedAt: serverTimestamp(),
-            userIds: [user.user.uid, "rmbJQucAbjQvll9pV341OB8hxnx2"],
-            id: "",
-          }).then((docRef) => {
-            updateDoc(doc(db, "chats", docRef.id), { id: docRef.id });
-            addDoc(collection(db, "messages"), {
-              chatId: docRef.id,
-              message:
-                "Hello i'm Islem medjahdi, I'm a computer science student in Algeria - Algiers, If you have any questions, let me know and don't forget to check my portfolio : https://islem-medjahdi-portfolio.vercel.app/",
-              sender: "rmbJQucAbjQvll9pV341OB8hxnx2",
-              type: "text",
-              createdAt: serverTimestamp(),
-            }).then((docRef) => {
-              updateDoc(doc(db, "messages", docRef.id), {
-                messageId: docRef.id,
-              });
-            });
-            updateDoc(doc(db, "chats", docRef.id), {
-              updatedAt: serverTimestamp(),
-              message:
-                "Hello i'm Islem medjahdi, I'm a computer science student in Algeria - Algiers, If you have any questions, let me know and don't forget to check my portfolio : https://islem-medjahdi-portfolio.vercel.app/",
-            });
-          });
-        })
-        .catch((e) => setError(e.code))
-        .finally(() => setLoading(false));
-    }
-  };
+  // const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setError("");
+  //   const { fName, lName, email, password, confirmPassword, birthday } = data;
+  //   if (fName.trim() === "") {
+  //     setError("First name can not be empty");
+  //     setLoading(false);
+  //   } else if (lName.trim() === "") {
+  //     setLoading(false);
+  //     setError("Last name can not be empty");
+  //   } else if (password !== confirmPassword) {
+  //     setError("Password missmatch");
+  //     setLoading(false);
+  //   } else {
+  //     createUserWithEmailAndPassword(auth, email, password)
+  //       .then((user) => {
+  //         const userData = {
+  //           fName,
+  //           lName,
+  //           birthday,
+  //           email,
+  //           uid: user.user.uid,
+  //           picture: "",
+  //           search: [
+  //             lName.toLowerCase(),
+  //             fName.toLowerCase(),
+  //             email.toLowerCase(),
+  //             fName.toLowerCase() + " " + lName.toLowerCase(),
+  //           ],
+  //         };
+  //         setDoc(doc(db, "users", user.user.uid), userData);
+  //         addDoc(collection(db, "chats"), {
+  //           createdAt: serverTimestamp(),
+  //           lastMessage: "",
+  //           updatedAt: serverTimestamp(),
+  //           userIds: [user.user.uid, "rmbJQucAbjQvll9pV341OB8hxnx2"],
+  //           id: "",
+  //         }).then((docRef) => {
+  //           updateDoc(doc(db, "chats", docRef.id), { id: docRef.id });
+  //           addDoc(collection(db, "messages"), {
+  //             chatId: docRef.id,
+  //             message:
+  //               "Hello i'm Islem medjahdi, I'm a computer science student in Algeria - Algiers, If you have any questions, let me know and don't forget to check my portfolio : https://islem-medjahdi-portfolio.vercel.app/",
+  //             sender: "rmbJQucAbjQvll9pV341OB8hxnx2",
+  //             type: "text",
+  //             createdAt: serverTimestamp(),
+  //           }).then((docRef) => {
+  //             updateDoc(doc(db, "messages", docRef.id), {
+  //               messageId: docRef.id,
+  //             });
+  //           });
+  //           updateDoc(doc(db, "chats", docRef.id), {
+  //             updatedAt: serverTimestamp(),
+  //             message:
+  //               "Hello i'm Islem medjahdi, I'm a computer science student in Algeria - Algiers, If you have any questions, let me know and don't forget to check my portfolio : https://islem-medjahdi-portfolio.vercel.app/",
+  //           });
+  //         });
+  //       })
+  //       .catch((e) => setError(e.code))
+  //       .finally(() => setLoading(false));
+  //   }
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+          e.preventDefault();
+          // setError(null);
+          setLoading(true);
+
+          try {
+              // Call the integrated handler
+              await handleSignUp(formData);
+              
+              // On success, clear the form and redirect
+              alert("Success! Your account has been created.");
+              // Example redirection: navigate('/home'); 
+              
+          } catch (err: any) {
+              // Display the error message from the handler (e.g., "Passwords do not match.")
+              setError(err.message || "An unknown error occurred.");
+          } finally {
+              setLoading(false);
+          }
+      };
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -147,7 +181,7 @@ export default function Signup() {
             className="w-28 pointer-events-none"
           />
         </div>
-        <form onSubmit={submitHandler}>
+        <form onSubmit={handleSubmit}>
           <h1 className="text-gray-900 font-bold text-xl mt-6">
             Create account
           </h1>
@@ -184,7 +218,7 @@ export default function Signup() {
                 Date of birth (MM/DD/YY)
               </label>
               <div className="outline-none flex items-center justify-between border-2 px-2 py-2">
-                {`${data.birthday.day} / ${data.birthday.month} / ${data.birthday.year} `}
+                {`${formData.birthday.day} / ${formData.birthday.month} / ${formData.birthday.year} `}
                 <div className="relative" ref={calendarRef}>
                   <svg
                     onClick={() => setOpenCalendar((prevState) => !prevState)}
@@ -207,7 +241,7 @@ export default function Signup() {
                         maximumDate={{ year: 2008, month: 12, day: 31 }}
                         minimumDate={{ year: 1950, month: 1, day: 1 }}
                         colorPrimary="#128C7E"
-                        value={data.birthday}
+                        value={formData.birthday}
                         onChange={dateChangeHandler}
                       />
                     </div>
